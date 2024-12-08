@@ -66,14 +66,16 @@ begin
 
         -- Simulasi panggilan lift dari lantai 5 (tombol naik) 
         -- dan lantai 3 & 4 (tombol pengen turun)
-		keypad_input(5) <= '1';  -- Tekan tombol lantai 6
+	keypad_input(5) <= '1';  -- Tekan tombol lantai 6 dari dalam lift ketika masih di lantai 1
         floor_calls(3).down_button <= '1';
         floor_calls(2).down_button <= '1';
         floor_calls(4).up_button <= '1';
 
         wait for 350 ps;
 		keypad_input(5) <= '0';
-		
+		force_door_open <= '1';
+		wait for 30 ps;
+		force_door_open <= '0';
 		wait for 100 ps;
         -- Reset input
         floor_calls(4).up_button <= '0';
