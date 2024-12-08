@@ -19,7 +19,8 @@ package lift_controller_package is
     function determine_lift_priority(
         current_floor : integer;
         current_direction : lift_state;
-        floor_calls : floor_call_array
+        floor_calls : floor_call_array;
+		floor_calls2 : floor_call_array
     ) return integer;
 end package lift_controller_package;
 
@@ -27,7 +28,8 @@ package body lift_controller_package is
     function determine_lift_priority(
         current_floor : integer;
         current_direction : lift_state;
-        floor_calls : floor_call_array
+        floor_calls : floor_call_array;
+		floor_calls2 : floor_call_array
     ) return integer is
         variable next_floor : integer := current_floor;
         variable min_distance : integer := 7;
@@ -36,50 +38,50 @@ package body lift_controller_package is
         if current_direction = MOVING_UP then
             -- Cari lantai terdekat di atas lantai saat ini yang memiliki panggilan naik
             for i in current_floor + 1 to 6 loop
-                if floor_calls(i).up_button = '1' then
+                if floor_calls(i).up_button = '1' OR floor_calls2(i).up_button = '1' then
                     return i;
-		    exit;
+					exit;
                 end if;
             end loop;
             
             -- Jika tidak ada, cari panggilan turun di atas
             for i in current_floor + 1 to 6 loop
-                if floor_calls(i).down_button = '1' then
+                if floor_calls(i).down_button = '1' OR floor_calls2(i).down_button = '1' then
                     return i;
-		    exit;
+					exit;
                 end if;
             end loop;
 
 	    -- Jika tidak ada lagi, cari panggilan turun di bawah agar ke bawah
             for i in current_floor - 1 downto 0 loop
-                if floor_calls(i).down_button = '1' then
+                if floor_calls(i).down_button = '1' OR floor_calls2(i).down_button = '1'then
                     return i;
-		    exit;
+					exit;
                 end if;
             end loop;
         
         elsif current_direction = MOVING_DOWN then
             -- Cari lantai terdekat di bawah lantai saat ini yang memiliki panggilan turun
             for i in current_floor - 1 downto 0 loop
-                if floor_calls(i).down_button = '1' then
+                if floor_calls(i).down_button = '1' OR floor_calls2(i).down_button = '1' then
                     return i;
-			exit;
+					exit;
                 end if;
             end loop;
             
             -- Jika tidak ada, cari panggilan naik di bawah
             for i in current_floor - 1 downto 0 loop
-                if floor_calls(i).up_button = '1' then
+                if floor_calls(i).up_button = '1' OR floor_calls2(i).up_button = '1' then
                     return i;
-		    exit;
+					exit;
                 end if;
             end loop;
 
             -- Jika tidak ada, cari panggilan turun di atas
             for i in current_floor + 1 to 6 loop
-                if floor_calls(i).down_button = '1' then
+                if floor_calls(i).up_button = '1' OR floor_calls2(i).up_button = '1' then
                     return i;
-		    exit;
+					exit;
                 end if;
             end loop;
         end if;

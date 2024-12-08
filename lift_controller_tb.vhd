@@ -11,6 +11,7 @@ architecture Behavioral of lift_controller_tb is
         Port ( 
             clk : in STD_LOGIC;
             reset : in STD_LOGIC;
+            keypad_input : in STD_LOGIC_VECTOR(6 downto 0);
             floor_calls : in floor_call_array;
             force_door_open : in STD_LOGIC;
             force_door_close : in STD_LOGIC;
@@ -23,6 +24,7 @@ architecture Behavioral of lift_controller_tb is
 
     signal clk : STD_LOGIC := '0';
     signal reset : STD_LOGIC := '1';
+    signal keypad_input : STD_LOGIC_VECTOR(6 downto 0) := (others => '0');
     signal floor_calls : floor_call_array := (others => (up_button => '0', down_button => '0'));
     signal force_door_open : STD_LOGIC := '0';
     signal force_door_close : STD_LOGIC := '0';
@@ -30,12 +32,13 @@ architecture Behavioral of lift_controller_tb is
     signal current_floor : INTEGER range 0 to 6;
     signal door_status : STD_LOGIC;
     signal lift_state_out : lift_state;
-
     constant CLK_PERIOD : time := 10 ps;
+
 begin
     uut: lift_controller PORT MAP (
         clk => clk,
         reset => reset,
+        keypad_input => keypad_input,
         floor_calls => floor_calls,
         force_door_open => force_door_open,
         force_door_close => force_door_close,
@@ -61,14 +64,22 @@ begin
         wait for 30 ps;
         reset <= '0';
 
-        -- Simulasi panggilan lift dari lantai 4 (tombol naik) dan lantai 2 & 3(tombol pengen turun)
-	floor_calls(4).up_button <= '1';
-	floor_calls(3).down_button <= '1';
-	floor_calls(2).down_button <= '1';
+        -- Simulasi panggilan lift dari lantai 5 (tombol naik) 
+        -- dan lantai 3 & 4 (tombol pengen turun)
+		keypad_input(5) <= '1';  -- Tekan tombol lantai 6
+        floor_calls(3).down_button <= '1';
+        floor_calls(2).down_button <= '1';
+        floor_calls(4).up_button <= '1';
+
         wait for 350 ps;
-	floor_calls(4).up_button <= '0';
+		keypad_input(5) <= '0';
+		
+		wait for 100 ps;
+        -- Reset input
+        floor_calls(4).up_button <= '0';
         floor_calls(3).down_button <= '0';
-	floor_calls(2).down_button <= '0';
+        floor_calls(2).down_button <= '0';
+
         wait;
     end process;
 end Behavioral;
